@@ -1,0 +1,15 @@
+{
+  "name": "mock-commands",
+  "version": "0.0.1",
+  "description": "Generate mock programs that help testing nodejs shellscripts",
+  "main": "index.js",
+  "scripts": {
+    "test": "docker run --tty --rm --env DOCKER=yes --env PATH=/mock-commands:$PATH --workdir /test --volume $PWD:/test node:6-slim node test/runTests.js"
+  },
+  "author": "Erik Soehnel",
+  "license": "MIT",
+  "devDependencies": {
+    "jasmine": "2.5.2",
+    "jasmine-spec-reporter": "2.7.0"
+  }
+}
