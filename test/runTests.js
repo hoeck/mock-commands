@@ -5,8 +5,6 @@ const Jasmine = require('jasmine');
 const SpecReporter = require('jasmine-spec-reporter');
 
 function runTests () {
-    assert(process.env.DOCKER === 'yes', 'not running inside docker');
-
     const jasmineRunner = new Jasmine();
 
     jasmine.getEnv().clearReporters();

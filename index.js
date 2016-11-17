@@ -1,1 +1,1 @@
-module.exports = require('./lib/mock-environment');
+module.exports = require('./lib/mock-script-environment');
