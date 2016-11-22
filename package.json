@@ -4,7 +4,7 @@
   "description": "Generate mock programs that help testing nodejs shellscripts",
   "main": "index.js",
   "scripts": {
-    "test": "docker run --tty --rm --tmpfs /test --volume $PWD:/project --workdir /project node:6-slim node test/runTests.js"
+    "test": "docker run --tty --rm --tmpfs /test:exec --volume $PWD:/project --workdir /project node:6-slim node test/runTests.js"
   },
   "author": "Erik Soehnel",
   "license": "MIT",
