@@ -44,6 +44,36 @@ describe('mock-script-environment', () => {
         });
     });
 
+    describe('method "exec"', () => {
+        afterEach(() => {
+            scriptEnv.clear();
+        });
+
+        it('should execute any command, returning a promise with the commands results', (done) => {
+            scriptEnv.exec('echo -n "foo"').then((res) => {
+                expect(res.stdout).toBe('foo');
+                expect(res.stderr).toBe('');
+                expect(res.exitCode).toBe(0);
+
+                done();
+            }).catch(done.fail);
+        });
+
+        it('should execute any command in "workdir"', (done) => {
+            scriptEnv.exec('echo -n $PWD').then((res) => {
+                expect(res.stdout).toBe(scriptEnv.getWorkdir());
+
+                done();
+            }).catch(done.fail);
+        });
+
+        it('should execute any command with a PATH that includes mocked commands', (done) => {
+            scriptEnv.mockCommand('mock-command', () => {});
+
+            scriptEnv.exec('which mock-command').then(done).catch(done.fail);
+        });
+    });
+
     describe('method "mockCommand"', () => {
         afterEach(() => {
             scriptEnv.clear();
