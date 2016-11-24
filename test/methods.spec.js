@@ -106,6 +106,35 @@ describe('mock-script-environment', () => {
                 done();
             });
         });
+
+        it('should pass the commands arguments to the mock function as "args"', (done) => {
+            let commandArgs;
+
+            scriptEnv.mockCommand('foo', (args) => {
+                commandArgs = args;
+                return 'foo';
+            });
+
+            scriptEnv.exec('foo -a --bar "123" ABC').then((res) => {
+                expect(res.stdout).toBe('foo');
+                expect(commandArgs).toEqual({args: ['-a', '--bar', '123', 'ABC']});
+
+                done();
+            }).catch(done.fail);
+        });
+
+        it('should create and return a jasmine spy when no mock function is passed', (done) => {
+            const spy = scriptEnv.mockCommand('foo').and.returnValue('foo');
+
+            expect(spy).toEqual(jasmine.any(Function));
+
+            scriptEnv.exec('foo --bar').then((res) => {
+                expect(res.stdout).toBe('foo');
+                expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({args: ['--bar']}));
+
+                done();
+            }).catch(done.fail);
+        });
     });
 
     describe('method "clear"', () => {
