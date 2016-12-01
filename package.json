@@ -1,7 +1,7 @@
 {
-  "name": "mock-commands",
+  "name": "mock-script-environment",
   "version": "0.0.1",
-  "description": "Generate mock programs that help testing nodejs shellscripts",
+  "description": "Mock a working dir and commands for service-testing nodejs (or any other) commandline programs.",
   "main": "index.js",
   "scripts": {
     "test": "docker run --tty --rm --tmpfs /test:exec --volume $PWD:/project --workdir /project node:6-slim node test/runTests.js"
