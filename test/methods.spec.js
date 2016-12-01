@@ -11,7 +11,7 @@ describe('mock-script-environment', () => {
         });
     });
 
-    describe('method "prepareFiles"', () => {
+    describe('method "createFiles"', () => {
         const workdir = scriptEnv.getWorkdir();
 
         afterEach(() => {
@@ -19,22 +19,22 @@ describe('mock-script-environment', () => {
         });
 
         it('should write the specified files to the working directory', () => {
-            scriptEnv.prepareFiles({'foo.txt': 'a\nb\n', 'bar.txt': '123'});
+            scriptEnv.createFiles({'foo.txt': 'a\nb\n', 'bar.txt': '123'});
 
             expect(fs.readFileSync(`${workdir}/foo.txt`).toString()).toBe('a\nb\n');
             expect(fs.readdirSync(`${workdir}`)).toEqual(['bar.txt', 'foo.txt']);
         });
 
         it('should be able to create files in nested directories', () => {
-            scriptEnv.prepareFiles({'foo/bar': '1', 'foo/foo/bar': '2'});
+            scriptEnv.createFiles({'foo/bar': '1', 'foo/foo/bar': '2'});
 
             expect(fs.readFileSync(`${workdir}/foo/bar`).toString()).toBe('1');
             expect(fs.readFileSync(`${workdir}/foo/foo/bar`).toString()).toBe('2');
         });
 
         it('should be idempotent', () => {
-            scriptEnv.prepareFiles({foo: '1', baz: '2'});
-            scriptEnv.prepareFiles({foo: '1', bar: '3'});
+            scriptEnv.createFiles({foo: '1', baz: '2'});
+            scriptEnv.createFiles({foo: '1', bar: '3'});
 
             expect(fs.readFileSync(`${workdir}/foo`).toString()).toBe('1');
             expect(fs.readFileSync(`${workdir}/bar`).toString()).toBe('3');
@@ -139,7 +139,7 @@ describe('mock-script-environment', () => {
 
     describe('method "clear"', () => {
         it('should delete everything in the work dir', () => {
-            scriptEnv.prepareFiles({foo: 'bar'});
+            scriptEnv.createFiles({foo: 'bar'});
             scriptEnv.clear();
 
             expect(fs.existsSync(scriptEnv.getWorkdir())).toBe(true);
