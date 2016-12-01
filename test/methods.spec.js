@@ -91,6 +91,21 @@ describe('mock-script-environment', () => {
             }).catch(done.fail);
         });
 
+        it('should exit with 0 and print "" when the spy returns undefined or null', (done) => {
+            scriptEnv.mockCommand('foo', () => undefined);
+            scriptEnv.mockCommand('bar', () => null);
+
+            Promise.all([
+                scriptEnv.exec('foo'),
+                scriptEnv.exec('bar')
+            ]).then(([fooRes, barRes]) => {
+                expect(fooRes.stdout).toBe('');
+                expect(barRes.stdout).toBe('');
+
+                done();
+            }).catch(done.fail);
+        });
+
         it('should provide an extended API to control return codes and stderr output', (done) => {
             scriptEnv.mockCommand('foo', () => ({
                 stdout: 'foo-stdout',
