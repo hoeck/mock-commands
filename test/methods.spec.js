@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const MockScriptEnvironment = require('..');
 
@@ -41,6 +42,37 @@ describe('mock-script-environment', () => {
             expect(fs.readFileSync(`${workdir}/baz`).toString()).toBe('2');
 
             expect(fs.readdirSync(workdir)).toEqual(['bar', 'baz', 'foo']);
+        });
+    });
+
+    describe('method "readFiles"', () => {
+        afterEach(() => {
+            scriptEnv.clear();
+        });
+
+        it('should return an object of {filename: content} containing all files in workdir', () => {
+            const files = {
+                'empty': '',
+                'foo.txt': 'foo-content',
+                'abc/def': 'abc-content',
+                'unicode': 'weird-character-ö'
+            };
+
+            scriptEnv.createFiles(files);
+
+            expect(scriptEnv.readFiles()).toEqual(files);
+        });
+
+        it('should return an empty object if workdir does not contain any files', () => {
+            expect(scriptEnv.readFiles()).toEqual({});
+        });
+
+        it('should not contain empty dirs', () => {
+            const emptyDir = path.join(scriptEnv.getWorkdir(), 'foo-empty-dir');
+
+            fs.mkdir(emptyDir);
+
+            expect(scriptEnv.readFiles()).toEqual({});
         });
     });
 
