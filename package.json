@@ -8,6 +8,10 @@
   },
   "author": "Erik Soehnel",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hoeck/mock-script-environment.git"
+  },
   "devDependencies": {
     "jasmine": "2.5.2",
     "jasmine-spec-reporter": "2.7.0"
