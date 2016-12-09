@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const net = require('net');
 
 const MockScriptEnvironment = require('..');
 
@@ -184,6 +185,57 @@ describe('mock-script-environment', () => {
         });
     });
 
+    describe('method "mockHost"', () => {
+        afterEach(() => {
+            scriptEnv.clear();
+        });
+
+        it('should add an "<ip> <host>" entry to /etc/hosts', () => {
+            scriptEnv.mockHost('foo-mock-script-environment-host', '192.168.0.1');
+
+            expect(fs.readFileSync('/etc/hosts')).toMatch(/192.168.0.1 foo-mock-script-environment-host/);
+        });
+
+        it('should use "127.0.0.1" by default', () => {
+            scriptEnv.mockHost('bar-mock-script-environment-host');
+
+            expect(fs.readFileSync('/etc/hosts')).toMatch(/127.0.0.1 bar-mock-script-environment-host/);
+        });
+
+        it('should create a working /etc/hosts file entry', (done) => {
+            scriptEnv.mockHost('foo-bar-mock-script-environment-host');
+
+            const server = net.createServer((socket) => {
+                socket.on('data', (data) =>  {
+                    socket.end(`echo ${data}`);
+                });
+            });
+
+            server.listen({
+                host: 'localhost',
+                port: 1234
+            }, () => {
+                const client = net.connect({
+                    host: 'foo-bar-mock-script-environment-host',
+                    port: 1234
+                }, () => {
+                    let clientData;
+
+                    client.write('foo-bar');
+                    client.on('data', (data) => {
+                        clientData = data;
+                    });
+                    client.on('end', () => {
+                        server.close(() => {
+                            expect(clientData.toString()).toBe('echo foo-bar');
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
     describe('method "clear"', () => {
         it('should delete everything in the work dir', () => {
             scriptEnv.writeFiles({foo: 'bar'});
@@ -217,5 +269,27 @@ describe('mock-script-environment', () => {
             }).not.toThrow();
         });
 
+        it('should reset the /etc/hosts to its previous state', () => {
+            const originalHosts = fs.readFileSync('/etc/hosts');
+
+            expect(originalHosts).not.toMatch(/foo-foo-mock-script-foo/);
+
+            scriptEnv.mockHost('foo-foo-mock-script-foo');
+            scriptEnv.mockHost('bar-bar-mock-script-bar');
+            expect(fs.readFileSync('/etc/hosts')).not.toEqual(originalHosts);
+
+            scriptEnv.clear();
+            expect(fs.readFileSync('/etc/hosts')).toEqual(originalHosts);
+        });
+
+        it('should remove the /etc/hosts backup file created by mockHost', () => {
+            expect(fs.existsSync(scriptEnv._originalHostsFile)).toBe(false);
+
+            scriptEnv.mockHost('foo-foo-mock-script-foo');
+            expect(fs.existsSync(scriptEnv._originalHostsFile)).toBe(true);
+
+            scriptEnv.clear();
+            expect(fs.existsSync(scriptEnv._originalHostsFile)).toBe(false);
+        });
     });
 });
