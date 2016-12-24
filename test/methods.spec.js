@@ -103,7 +103,7 @@ describe('mock-script-environment', () => {
         it('should execute any command with a PATH that includes mocked commands', (done) => {
             scriptEnv.mockCommand('mock-command', () => {});
 
-            scriptEnv.exec('which mock-command').then(done).catch(done.fail);
+            scriptEnv.exec('mock-command').then(done).catch(done.fail);
         });
     });
 
