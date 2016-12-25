@@ -43,7 +43,7 @@ Install jasmine (or any other test framework/runner you'd like to use):
 
 ### The script to test ($PROJECT_DIR/git-add.js)
 
-    #!/bin/env node
+    #!/usr/bin/env node
 
     const fs = require('fs');
     const childProcess('child_process');
@@ -75,6 +75,11 @@ Install jasmine (or any other test framework/runner you'd like to use):
         let git;
 
         beforeEach(() => {
+
+            // git-add.js is an executable script launching with `#!/usr/bin/env node`,
+            // so we need `env` and `node` on the PATH
+            scriptEnv.provideCommand('env');
+            scriptEnv.provideCommand('node');
 
             // set up a mock for the real 'git' command
             git = scriptEnv.mockCommand('git');

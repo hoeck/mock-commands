@@ -185,6 +185,36 @@ describe('mock-script-environment', () => {
         });
     });
 
+    describe('method "provideCommand"', () => {
+        afterEach(() => {
+            scriptEnv.clear();
+        });
+
+        it('should be necessary to add an existing binary to the PATH', (done) => {
+            scriptEnv.exec('node -e "console.log(1)"').then(done.fail).catch(done);
+        });
+
+        it('should enable a given command during a test when I know where it is', (done) => {
+            scriptEnv.provideCommand('node', process.execPath);
+
+            scriptEnv.exec('node -e "console.log(1)"').then((res) => {
+                expect(res.stdout).toBe('1\n');
+
+                done();
+            }).catch(done.fail);
+        });
+
+        it('should enable a given command during a test and find its path automatically', (done) => {
+            scriptEnv.provideCommand('node');
+
+            scriptEnv.exec('node -e "console.log(1)"').then((res) => {
+                expect(res.stdout).toBe('1\n');
+
+                done();
+            }).catch(done.fail);
+        });
+    });
+
     describe('method "mockHost"', () => {
         afterEach(() => {
             scriptEnv.clear();
